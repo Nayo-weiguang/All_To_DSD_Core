@@ -1,0 +1,17 @@
+All To DSD Core: FLAC/WAV -> DSF converter (JM21 All-To-DSD chain)
+
+Standalone Windows converter implementing the FiiO JM21 player's
+"All To DSD" digital processing chain. The chain was derived from the
+device firmware and verified against the real hardware:
+
+- 18 golden vectors x 3 layers (quantiser input / 1-bit intermediate /
+  packed stream / DSF DATA): byte-exact across three independent
+  implementations
+- long-input production run (20 s, 3446 DSD blocks) structurally verified
+- device analog-output spectrum experiment confirms the noise-shaping
+  signature predicted by the digital model
+- packed DSD64 stream accepted and correctly decoded by an independent
+  DSD DAC (CS43131)
+
+Usage and the verified parameter set are documented in README.md.
+Source code is not included in this repository at this time.
