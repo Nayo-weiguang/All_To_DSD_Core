@@ -15,3 +15,5 @@ device firmware and verified against the real hardware:
 
 Usage and the verified parameter set are documented in README.md.
 Source code is not included in this repository at this time.
+
+Fix: web drag&drop could not add files (invalid input.files assignment); unsupported formats now show a visible error row.
