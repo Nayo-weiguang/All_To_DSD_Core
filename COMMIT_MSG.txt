@@ -33,3 +33,5 @@ Web UI: add 4 parameter presets (listening / JM21 DSD64 / JM21 DSD256 / lowest d
 Feature: AIFF/W64/RF64 built-in loaders + ffmpeg fallback bridge (CreateProcessW, fixes CJK paths on Windows). AAC/M4A/MP3 now convertible.
 
 Docs: list supported input formats in Core README.
+
+Fix: --jm21 no longer forces planarBlocks (wrong pitch/speed/noise on device, 966 Hz vs 1000 Hz measured). Default output rate is now DSD256 in both web UI and CLI.
