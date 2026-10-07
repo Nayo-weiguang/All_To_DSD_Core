@@ -9935,3 +9935,50 @@ web.cpp  参数预设按钮组 + PRESETS 表 + applyPreset()（同步表单 + �
   jm21l0  → 服务端 g=-1.0000（核心侧取 fabs=1.0）  jm21 开
 GATE 1-5b 全 PASS
 ```
+
+## 111. 格式支持扩展：AIFF/W64/RF64 内置 + ffmpeg 兜底（2026-07）
+
+### 111.1 目标
+
+用户音乐库（`H:\ALL_TO_DSD\music`）有 19 个 **m4a**，此前完全无法转换。
+要求："内置为主，ffmpeg 兜底"。
+
+### 111.2 内置（零依赖，沿用既有架构）
+
+```
+AIFF / AIFC   FORM + COMM（80-bit extended 采样率）+ SSND
+W64 / RF64    64-bit RIFF GUID 容器，RF64 的真实长度在 ds64 chunk
+```
+
+共用 `decodeSample()` 做样本解码（大端/小端、整数/浮点、容器宽度 > 有效位宽）。
+另修 CAF loader（chunk size 为**大端** int64、desc 内采样率为大端 f64）。
+
+### 111.3 ffmpeg 兜底桥
+
+内置 loader 都不认识时，走 `ffmpeg ... -f s32le -ac 2 -ar 88200 -`，
+即请求标准 88200 Hz 立体声 s32le，再复用既有重采样与转换链。
+
+**关键实现点**：最初用 `_popen`，在 Windows 上是 **ANSI 文本模式** ——
+系统代码页无法表示用户音乐库的中文路径，导致每一个 m4a 都报 "cannot decode"，
+而**完全相同的命令行在 UTF-8 shell 里是成功的**（可取到 134 MB PCM）。
+改为 **`CreateProcessW` + 匿名管道（二进制）** 后解决，同时支持 Unicode 路径。
+
+ffmpeg 定位顺序：`--ffmpeg` 参数 → `FFMPEG_PATH` 环境变量 →
+若干常见安装位置。
+
+### 111.4 覆盖实测（全部 OK）
+
+```
+FLAC  内置      WAV      内置
+AIFF  内置      CAF      ffmpeg 兜底
+M4A   ffmpeg 兜底        MP3     ffmpeg 兜底
+```
+
+真实样本：19 首 m4a 中的 `01 螺旋 - RASEN.m4a` → DSD64 128.16 MiB，10.2 s。
+
+### 111.5 遗留
+
+- **MP3 内置解码器**（minimp3）与 **AAC 内置解码器**未做；
+  目前靠 ffmpeg 兜底。若要求真正的零依赖单文件，需要再引入这两个解码器。
+- `load_caf` 的 chunk 解析在 ffmpeg 生成的 CAF 上不适用（该文件的格式描述
+  位于非标准位置），实际由 ffmpeg 兜底覆盖，保留 loader 供规范 CAF 使用。
