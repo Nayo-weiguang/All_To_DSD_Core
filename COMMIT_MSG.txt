@@ -31,3 +31,5 @@ Test: add GATE 5b — FIR-path byte-exact regression (the default FIR path had n
 Web UI: add 4 parameter presets (listening / JM21 DSD64 / JM21 DSD256 / lowest distortion), each with a note explaining why that gain+dither combination.
 
 Feature: AIFF/W64/RF64 built-in loaders + ffmpeg fallback bridge (CreateProcessW, fixes CJK paths on Windows). AAC/M4A/MP3 now convertible.
+
+Docs: list supported input formats in Core README.
