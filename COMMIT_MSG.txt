@@ -51,3 +51,5 @@ Fix: the web jm21 presets still forced a planar DSF layout that the CLI dropped 
 Fix: web API defaulted to DSD64 when no rate was given; now DSD256, matching the CLI.
 
 Feature: temp scratch directories (%TEMP%\flac2dsf-<pid>-<seq>) are now swept -- once at startup, then every 5 min -- removing only directories no live job is writing to and untouched for 60 min. A DSD256 render is ~1 GiB per song and nothing ever removed them; one afternoon of testing left 24 GiB across 145 directories.
+
+Docs: replace the public REVERSE_ENGINEERING.md with a purpose-written condensed version. The public copy was the full 10098-line private archive, which contradicted the "no RE details in public" requirement; the README was sanitised but this file was not. The new version keeps the method direction, the verification discipline and the user-visible pitfalls, and carries no symbol names, addresses, runtime property names, tool specifics or experiment logs.
