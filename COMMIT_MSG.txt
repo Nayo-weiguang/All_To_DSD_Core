@@ -39,3 +39,5 @@ Fix: --jm21 no longer forces planarBlocks (wrong pitch/speed/noise on device, 96
 Feature: -r 64/128 now emit a 24-bit WAV from the interpolation stage only (no 1-bit quantiser), verified zero quantisation noise; -r 256/512 keep the DSF path.
 
 Docs: clarify sec.116.4; gate5 pinned to -r 256 now that low rates emit WAV.
+
+Docs: document --force-dsf (bypasses the WAV output for -r < 256) used by the regression gates.
