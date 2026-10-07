@@ -17,3 +17,7 @@ Usage and the verified parameter set are documented in README.md.
 Source code is not included in this repository at this time.
 
 Fix: web drag&drop could not add files (invalid input.files assignment); unsupported formats now show a visible error row.
+
+Fix: rollback the DSF bit-reverse that made all output noisy; fix --jm21 -r mapping (level=log2(o.L/64)); add GATE 2c guard. Verified clean on JM21 by the user.
+
+Fix: rollback the DSF bit-reverse that made all output noisy; fix --jm21 -r mapping (level=log2(o.L/64)); add GATE 2c guard. Verified clean on JM21 by the user.
