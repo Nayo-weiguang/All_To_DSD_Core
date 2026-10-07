@@ -9856,3 +9856,44 @@ sample_count = frames × L（有效值）   时长 298.3 s，与源一致
 --jm21 真实路径（设备等价）  flac2dsf --jm21 --jm21-mode 0 --arg6 0 \
                                  --gain 0dB -d 0 in.flac out.dsf
 ```
+
+## 108. 补齐门禁盲区：FIR 路径黄金向量门禁 GATE 5b（2026-10-07）
+
+### 108.1 动机
+
+§107 记录：`GATE 5` 只覆盖 `--jm21`，FIR（普通）路径**无任何回归门禁**。
+本次 FIR 输出出现沙哑/噪声时，全部门禁依然全绿 —— 因为没人测过这条路径。
+能快速排除代码嫌疑纯属侥幸（恰有 GitHub 历史二进制可对比）。
+
+### 108.2 实现
+
+```
+golden/fir/            12 个基线 DSF（6 输入 × -r {64,128}）+ MANIFEST.json
+gate5_fir.py           GATE 5b：重跑并逐字节比对 sha256
+build_gate.py          把 5b 接入总门禁，任一失败即 STOP
+```
+
+基线用**默认参数**（−3 dB + 0.05 抖动）生成 —— 即用户在 JM21 上确认"干净"
+的那组参数（§107.3）。同时覆盖两个 DSD 率，因为二者的 rate plan 分支不同。
+
+### 108.3 有牙性验证
+
+用导致本次事故的错误参数（`--gain 0dB -d 0`）跑基线 case：
+
+```
+得到 c221343d4cb0c394…   基线 c9953cdfb8aed524…
+门禁判定: FAIL  ← 证明能抓到该类回归
+```
+
+### 108.4 门禁全景（封版）
+
+```
+GATE 1    源码扫描：拒绝 d8=16-mode / std::fma
+GATE 2a   删除旧 exe（禁止复用）
+GATE 2b   构建成功
+GATE 2c   DSF 数据区不得被位反转（§104 事故）
+GATE 3    exe 存在 + size + mtime + sha256
+GATE 4    golden/real32 基线齐备（18 cases, mode 0/1/2）
+GATE 5    --jm21 三层三方 byte-exact（固件 == Python == C++）
+GATE 5b   FIR 路径 byte-exact vs 基线（本次新增）
+```
