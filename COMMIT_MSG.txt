@@ -41,3 +41,13 @@ Feature: -r 64/128 now emit a 24-bit WAV from the interpolation stage only (no 1
 Docs: clarify sec.116.4; gate5 pinned to -r 256 now that low rates emit WAV.
 
 Docs: document --force-dsf (bypasses the WAV output for -r < 256) used by the regression gates.
+
+Fix: frontend accept/isAudio whitelist was never extended when the ffmpeg fallback landed, so M4A/MP3/AAC were rejected before the request was sent.
+
+Fix: decode failures now report ffmpeg's own first error line, and Apple Music FairPlay files (moov carrying sinf/schm/enca) are named as such instead of a bare "cannot decode".
+
+Fix: the web jm21 presets still forced a planar DSF layout that the CLI dropped in sec.115 (wrong pitch and speed on device, 966 Hz vs 1000 Hz measured).
+
+Fix: web API defaulted to DSD64 when no rate was given; now DSD256, matching the CLI.
+
+Feature: temp scratch directories (%TEMP%\flac2dsf-<pid>-<seq>) are now swept -- once at startup, then every 5 min -- removing only directories no live job is writing to and untouched for 60 min. A DSD256 render is ~1 GiB per song and nothing ever removed them; one afternoon of testing left 24 GiB across 145 directories.
