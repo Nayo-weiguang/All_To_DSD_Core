@@ -9738,3 +9738,54 @@ CS43198 本地解码能力（§74.5 实测 DSD512 输出纯噪声），属**设�
 
 `GATE 2c` 保留（拒绝 DSF 位序反转）；新增的 level 映射由 GATE 5 的
 `--jm21 -r` 回归间接覆盖（四档输出率与大小需人工/脚本抽查）。
+
+## 106. M1：实时流式处理（--stream）已实现并通过逐字节验收（2026-10-07）
+
+### 106.1 目标
+
+在保持"数字核心与固件逐字节一致"的前提下，增加**实时音频流处理**能力，
+为后续"应用 → 虚拟扬声器 → 实时 DSD → 独占 USB DSD DAC"链路铺路。
+
+### 106.2 实现
+
+```
+flac2dsf --stream <in.pcm|-> --pcm-bits {8,16,24,32}
+                            --pcm-channels N --pcm-rate N  <out.dsf>
+```
+
+* 输入侧新增 `read_raw_pcm()`：按 64 KB 块增量读取裸 PCM（文件或 **stdin**），
+  8/16/24/32 位、有符号归一化；**输出侧仍走既有 DsfWriter**，
+  故插值/量化/打包的状态延续与离线路径完全相同。
+* Windows 上 stdin 默认**文本模式**会吞掉 CR/LF 破坏样本流
+  → 显式 `_setmode(_fileno(stdin), _O_BINARY)`（已修，验收见 106.3）。
+
+### 106.3 验收：三条路径与离线转换逐字节一致
+
+同一份 32-bit/88200 Hz 立体声 PCM：
+
+```
+离线 (WAV 输入)      0091289fb37e56ad
+--stream 文件输入    0091289fb37e56ad   IDENTICAL
+--stream stdin 输入  0091289fb37e56ad   IDENTICAL
+```
+
+真实管道端到端：
+
+```
+ffmpeg -i 02 以后的以后.flac -t 15 -f s32le -ar 88200 -ac 2 - \
+  | flac2dsf --jm21 --jm21-mode 0 --arg6 0 --gain 0dB -d 0 \
+      --stream - --pcm-bits 32 --pcm-channels 2 --pcm-rate 88200 pipe.dsf
+→ pcm 88200 Hz, 1323000 frames  →  dsd 2822400 Hz, 42336000 samples/ch, 10.09 MiB
+```
+
+GATE 1-5 全 PASS（新增功能未触及数字核心）。
+
+### 106.4 后续（M2 / M3）
+
+```
+M2  实时管道 → DoP 封装 → iBasso DC03 Pro（独占输出）
+    iBasso 的 DoP 通路已验证可用（§94）；JM21 的 USB DAC 不自动识别 DoP（§95），
+    其 native DSD 输入需 FiiO ASIO 驱动，暂不可用
+M3  应用 → VoiceMeeter Input（虚拟扬声器）→ 我们共享回环捕获 → DSD → iBasso
+    受限：VoiceMeeter 侧只能共享模式捕获，无法独占
+```

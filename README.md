@@ -26,6 +26,8 @@ flac2dsf [options] <in.flac|in.wav> [out.dsf]
 | `-g, --gain X` | 增益，`db` 后缀（默认）或 `x` 线性 |
 | `-d, --dither X` | TPDF 抖动（默认 0.05，0 关闭） |
 | `--gain 0dB -d 0` | **与设备工作点严格一致的参数组合** |
+| `--stream` | **实时流式处理**：读裸 PCM（文件或 stdin），边到边转 DSD。参数
+  `--pcm-bits` / `--pcm-channels` / `--pcm-rate` 声明输入格式 |
 | `--web` | 启动本地网页界面（见 [All_To_DSD_网页工具](../All_To_DSD_网页工具)） |
 | `--no-tags` | 不复制 FLAC 标签到 DSF |
 | `-q, --quiet` | 静默 |
