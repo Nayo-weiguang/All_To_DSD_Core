@@ -27,3 +27,5 @@ Feature: --stream real-time PCM stream input (file or stdin), byte-identical to 
 Docs: clarify that --gain 0dB -d 0 applies to --jm21 only; the default -3 dB + 0.05 dither is required on the FIR path.
 
 Test: add GATE 5b — FIR-path byte-exact regression (the default FIR path had no coverage; --gain 0dB -d 0 is for --jm21 only).
+
+Web UI: add 4 parameter presets (listening / JM21 DSD64 / JM21 DSD256 / lowest distortion), each with a note explaining why that gain+dither combination.
