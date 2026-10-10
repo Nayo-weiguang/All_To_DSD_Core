@@ -28,6 +28,12 @@ flac2dsf [options] <in.flac|in.wav> [out.dsf]
 | `--gain 0dB -d 0` | **与设备工作点严格一致的参数组合** |
 | `--stream` | **实时流式处理**：读裸 PCM（文件或 stdin），边到边转 DSD。参数
   `--pcm-bits` / `--pcm-channels` / `--pcm-rate` 声明输入格式 |
+| `--stream-out FILE` | **流式落盘**：不缓存整首，边转边写 DSF。输出与离线路径逐字节一致，
+  端到端延迟约 12 ms；`--stream-out-chunk N` 可调分块粒度（不影响输出字节） |
+| `--probe` | 列出渲染端点，报告每个能否在共享模式打开、能否接受独占 DSD，并原样打印
+  HRESULT（不做猜测） |
+| `--dsf-play` / `--dev N` / `--dsd-level N` | 采集系统音频并以独占 RAW 模式直接送入声卡。
+  独占模式需要管理员权限，且依赖驱动是否允许 |
 | `--web` | 启动本地网页界面（见 [All_To_DSD_网页工具](../All_To_DSD_网页工具)） |
 | `--no-tags` | 不复制 FLAC 标签到 DSF |
 | `-q, --quiet` | 静默 |
